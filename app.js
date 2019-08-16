@@ -1,6 +1,7 @@
 import express from 'express';
 import db from './db/db';
 import bodyParser from 'body-parser';
+import select from './db/mysql';
 
 // Set up the express app
 const app = express();
@@ -9,16 +10,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// get all todos
-app.get('/api/v1/todos', (req, res) => {
-  res.status(200).send({
-    success: 'true',
-    message: 'todos retrieved successfully',
-    todos: db
-  })
-});
-
-app.post('/api/v1/todos', (req, res) => {
+app.post('/api/users', (req, res) => {
   if(!req.body.title) {
     return res.status(400).send({
       success: 'false',
@@ -41,6 +33,18 @@ app.post('/api/v1/todos', (req, res) => {
    message: 'todo added successfully',
    todo
  })
+});
+
+// get all todos
+app.get('/api/users', (req, res) => {
+  select(req.query.id, function(obj)
+  {
+    res.status(200).send({
+      success: 'true',
+      message: 'todos retrieved successfully',
+      todos: obj
+    })
+  })
 });
 
 const PORT = 5000;
