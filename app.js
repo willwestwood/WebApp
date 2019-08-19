@@ -35,16 +35,37 @@ app.post('/api/users', (req, res) => {
  })
 });
 
-// get all todos
+// get
 app.get('/api/users', (req, res) => {
-  select(req.query.id, function(obj)
-  {
+  select('users', req.query.id)
+  .then(function(obj) {
     res.status(200).send({
       success: 'true',
-      message: 'todos retrieved successfully',
+      message: 'retrieved successfully',
       todos: obj
     })
   })
+  .catch(err => res.status(200).send({
+    success: 'false',
+    message: 'not retrieved',
+    todos: err
+  }));
+});
+
+app.get('/api/notes', (req, res) => {
+  select('notes', req.query.id)
+  .then(function(obj) {
+    res.status(200).send({
+      success: 'true',
+      message: 'retrieved successfully',
+      todos: obj
+    })
+  })
+  .catch(err => res.status(200).send({
+    success: 'false',
+    message: 'not retrieved',
+    todos: err
+  }));
 });
 
 const PORT = 5000;
