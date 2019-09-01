@@ -94,7 +94,7 @@ class Users extends MySqlConnection
   {
     var insertStr = "INSERT INTO"
     insertStr += ' ' + super.table()
-    insertStr += ' (firstName, secondName, emailAddress, isAdmin, password) '
+    insertStr += ' (firstName, secondName, emailAddress, isAdmin, passwordHash) '
     insertStr += "VALUES ('" + firstName + "', '" + secondName + "', '" + emailAddress + "', " + isAdmin + ", '" + passwordHash + "')"
 
     console.log(insertStr)
@@ -105,7 +105,7 @@ class Users extends MySqlConnection
   authenticateUser(emailAddress, passwordHash)
   {
     var selectStr = 'SELECT ID FROM ' + this.table()
-    selectStr += ' WHERE emailAddress = "' + emailAddress + '" AND password = "' + passwordHash + '"'
+    selectStr += ' WHERE emailAddress = "' + emailAddress + '" AND passwordHash = "' + passwordHash + '"'
 
     var conn = this._connection
     return new Promise(function (resolve, reject) {

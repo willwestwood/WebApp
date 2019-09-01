@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 //import select from './db/mysql';
 var db = require('./db/mysql')
 
-var users = require('./db/users.json');
 var logger = require('morgan');
 
 var crypto   = require('crypto');
