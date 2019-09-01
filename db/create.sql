@@ -8,7 +8,9 @@ CREATE TABLE crm.users (
  secondName VARCHAR(255) NOT NULL,
  emailAddress VARCHAR(255) NOT NULL,
  isAdmin BOOLEAN NOT NULL,
- PRIMARY KEY (id)
+ passwordHash varchar(60) NOT NULL,
+ PRIMARY KEY (id),
+ UNIQUE (emailAddress)
  );
  
  CREATE TABLE crm.companies (
@@ -37,20 +39,20 @@ CREATE TABLE crm.users (
  PRIMARY KEY (id)
  );
  
-INSERT INTO crm.users
-VALUES (0, 'William', 'Westwood', 'willjwestwood@gmail.com', TRUE);
+INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash)
+VALUES ('William', 'Westwood', 'willjwestwood@gmail.com', TRUE, '6d18f698b58037ee33e036773f5ba8db60fd63d1');
 
-INSERT INTO crm.users
-VALUES (0, 'Lorna', 'Westwood', 'lorna@ctech.uk', FALSE);
+INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash)
+VALUES ('Lorna', 'Westwood', 'lorna@company.uk', FALSE, '6d18f698b58037ee33e036773f5ba8db60fd63d1');
 
-INSERT INTO crm.users
-VALUES (0, 'Louisa', 'Briguglio', 'louisa_is_cool@gmail.com', TRUE);
+INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash)
+VALUES ('Louisa', 'Briguglio', 'louisa@gmail.com', TRUE, '6d18f698b58037ee33e036773f5ba8db60fd63d1');
 
 INSERT INTO crm.companies
-VALUES (0, 'cTech Ltd', '20 Finns Business Park, Crondall, Hampshire, GU10 5RP', '+441252 851133');
+VALUES (0, 'Company Ltd', '20 Business Park, London, NW1 5RP', '+442095 551133');
 
 INSERT INTO crm.contacts
-VALUES (0, 'Graham', 'Westwood', 'gwestwood@ctech.uk', 1);
+VALUES (0, 'Graham', 'Westwood', 'gwestwood@company.uk', 1);
 
 INSERT INTO crm.notes(contactId, userId, note)
 VALUES (1, 1, 'Test note');

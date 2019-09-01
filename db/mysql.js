@@ -1,5 +1,7 @@
 var mysql = require('mysql')
 
+var exports = module.exports = {}
+
 class MySqlConnection {
   constructor(table) {
     this._table = table;
@@ -56,13 +58,127 @@ class MySqlConnection {
       }
     });
   }
+
+  insert(insertStr)
+  {
+    var conn = this._connection
+    return new Promise(function (resolve, reject) {
+      try {
+        conn.query(insertStr, function (err, result, fields) {
+          if (err)
+            reject(err)
+
+          resolve(result)
+        });
+      } catch (e) {
+        reject(e)
+      }
+    });
+  }
 }
 
-export default async function select(table, id) {
-  var conn = new MySqlConnection(table)
+class Users extends MySqlConnection
+{
+  constructor()
+  {
+    super('users')
+  }
+
+  select(cols = ['*'], id = undefined)
+  {
+    console.log('Derived class')
+    return super.select(cols, id)
+  }
+
+  insert(firstName, secondName, emailAddress, isAdmin, passwordHash)
+  {
+    var insertStr = "INSERT INTO"
+    insertStr += ' ' + super.table()
+    insertStr += ' (firstName, secondName, emailAddress, isAdmin, password) '
+    insertStr += "VALUES ('" + firstName + "', '" + secondName + "', '" + emailAddress + "', " + isAdmin + ", '" + passwordHash + "')"
+
+    console.log(insertStr)
+
+    return super.insert(insertStr)
+  }
+
+  authenticateUser(emailAddress, passwordHash)
+  {
+    var selectStr = 'SELECT ID FROM ' + this.table()
+    selectStr += ' WHERE emailAddress = "' + emailAddress + '" AND password = "' + passwordHash + '"'
+
+    var conn = this._connection
+    return new Promise(function (resolve, reject) {
+      try {
+        conn.query(selectStr, function (err, rows, fields) {
+          if (err)
+            reject(err)
+
+          resolve(rows)
+        });
+      } catch (e) {
+        reject(e)
+      }
+    });
+  }
+}
+
+exports.select = async function (table, id) {
+  var conn
+  if (table == 'users')
+    conn = new Users()
+  else
+    conn = new MySqlConnection(table)
   conn.begin()
-  var obj = await conn.select(['*'], id)
+  try
+  {
+    var obj = await conn.select(['*'], id)
+  }
+  catch(e)
+  {
+    return e
+  }
+  finally
+  {
+    conn.end()
+  }
+
+  return obj
+}
+
+exports.insert = async function (table, id) {
+  var conn
+  if (table == 'users')
+    conn = new Users()
+  else
+    conn = new MySqlConnection(table)
+  conn.begin()
+  var obj = await conn.insert(['*'], id)
   conn.end()
+
+  return obj
+}
+
+exports.authenticateUser = async function (emailAddress, passwordHash) {
+  var conn = new Users()
+  conn.begin()
+  var obj = await conn.authenticateUser(emailAddress, passwordHash)
+  conn.end()
+
+  return obj
+}
+
+exports.insertUser = async function (firstName, secondName, emailAddress, isAdmin, passwordHash) {
+  var conn = new Users()
+  conn.begin()
+  var obj
+  try {
+    obj = await conn.insert(firstName, secondName, emailAddress, isAdmin, passwordHash)
+  } catch (e) {
+    obj = e
+  } finally {
+    conn.end()
+  }
 
   return obj
 }
