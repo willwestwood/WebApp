@@ -3,6 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 //import select from './db/mysql';
 var db = require('./db/mysql')
+var users = require('./models/users')
 
 var logger = require('morgan');
 
@@ -34,11 +35,8 @@ router.post('/authenticate', function(req, res) {
     var foundUser = {};
 
     var encPassword = hashPassword(password);
-    console.log(encPassword)
 
-    console.log(req.body.user + " " + req.body.password);
-
-    db.authenticateUser(username, encPassword).then(function(obj) {
+    users.authenticate(username, encPassword).then(function(obj) {
       if (obj.length > 0)
       {
         var token = jwt.sign(foundUser, app.get('superSecret'), {
@@ -163,7 +161,10 @@ router.get('/test', function(req, res) {
 
 // get
 router.get('/users', (req, res) => {
-  db.select('users', req.query.id)
+  users.get({
+    firstName: req.query.firstName,
+    secondName: req.query.secondName
+  })
   .then(function(obj) {
     res.status(200).send({
       success: 'true',
@@ -195,13 +196,16 @@ router.get('/notes', (req, res) => {
 });
 
 router.post('/register', (req, res) => {
-  var emailAddress = req.query.emailAddress
-  var password = hashPassword(req.query.password)
-  var firstName = req.query.firstName
-  var secondName = req.query.secondName
-  var isAdmin = true
+  var user =
+  {
+    emailAddress: req.query.emailAddress,
+    passwordHash: hashPassword(req.query.password),
+    firstName: req.query.firstName,
+    secondName: req.query.secondName,
+    isAdmin: true
+  }
 
-  db.insertUser(firstName, secondName, emailAddress, isAdmin, password)
+  users.add(user)
   .then(function(obj) {
     res.status(200).send({
       success: 'true',
@@ -211,8 +215,8 @@ router.post('/register', (req, res) => {
   })
   .catch(err => res.status(200).send({
     success: 'false',
-    message: 'not retrieved',
-    notes: err
+    message: 'error',
+    notes: err.message
   }));
 });
 

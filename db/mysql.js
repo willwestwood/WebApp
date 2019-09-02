@@ -13,36 +13,39 @@ class MySqlConnection {
     }
   }
 
-  table() {
-    return this._table;
-  }
+  table() { return this._table }
 
-  begin()
-  {
+  begin() {
     this._connection = mysql.createConnection(this._connectionStr);
     this._connection.connect();
   }
 
-  end()
-  {
+  end() {
     this._connection.end();
   }
 
-  select(cols = ['*'], id = undefined)
-  {
-    var selectStr = 'SELECT'
+  select(names, values) {
+    var selectStr = 'SELECT * FROM ' + this._table
 
-    for(var i = 0; i < cols.length; i++)
-    {
-      selectStr += ' ' + cols[i]
-      if(i < cols.length - 1)
-        selectStr += ','
+    var length = Math.min(names.length, values.length)
+    if(length > 0) {
+      var validWhereClause = false
+      for(var i = 0; i < length; i++) {
+        if (names[i] == undefined || values[i] == undefined)
+          continue
+
+        if (!validWhereClause) {
+          selectStr += ' WHERE'
+          validWhereClause = true
+        }
+        else
+          selectStr += ' AND '
+
+        selectStr += ' ' + names[i] + ' = \'' + values[i] + '\''
+      }
     }
 
-    selectStr += ' FROM ' + this.table()
-
-    if(id >= 0 && id != undefined)
-      selectStr += ' WHERE id = ' + id
+    console.log(selectStr)
 
     var conn = this._connection
     return new Promise(function (resolve, reject) {
@@ -59,8 +62,7 @@ class MySqlConnection {
     });
   }
 
-  insert(insertStr)
-  {
+  insert(insertStr) {
     var conn = this._connection
     return new Promise(function (resolve, reject) {
       try {
@@ -77,34 +79,29 @@ class MySqlConnection {
   }
 }
 
-class Users extends MySqlConnection
-{
-  constructor()
-  {
+exports.Users = class Users extends MySqlConnection {
+  constructor() {
     super('users')
   }
 
-  select(cols = ['*'], id = undefined)
-  {
-    console.log('Derived class')
-    return super.select(cols, id)
+  columns() {
+    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash']
   }
 
-  insert(firstName, secondName, emailAddress, isAdmin, passwordHash)
-  {
+  select(names, values) {
+    return super.select(names, values)
+  }
+
+  insert(firstName, secondName, emailAddress, isAdmin, passwordHash) {
     var insertStr = "INSERT INTO"
     insertStr += ' ' + super.table()
     insertStr += ' (firstName, secondName, emailAddress, isAdmin, passwordHash) '
     insertStr += "VALUES ('" + firstName + "', '" + secondName + "', '" + emailAddress + "', " + isAdmin + ", '" + passwordHash + "')"
-
-    console.log(insertStr)
-
     return super.insert(insertStr)
   }
 
-  authenticateUser(emailAddress, passwordHash)
-  {
-    var selectStr = 'SELECT ID FROM ' + this.table()
+  authenticateUser(emailAddress, passwordHash) {
+    var selectStr = 'SELECT ID FROM ' + super.table()
     selectStr += ' WHERE emailAddress = "' + emailAddress + '" AND passwordHash = "' + passwordHash + '"'
 
     var conn = this._connection
@@ -113,8 +110,8 @@ class Users extends MySqlConnection
         conn.query(selectStr, function (err, rows, fields) {
           if (err)
             reject(err)
-
-          resolve(rows)
+          else
+            resolve(rows)
         });
       } catch (e) {
         reject(e)
@@ -123,30 +120,27 @@ class Users extends MySqlConnection
   }
 }
 
-exports.select = async function (table, id) {
+exports.select = async function select (table, id) {
   var conn
   if (table == 'users')
     conn = new Users()
   else
     conn = new MySqlConnection(table)
-  conn.begin()
-  try
-  {
+  try {
+    conn.begin()
     var obj = await conn.select(['*'], id)
   }
-  catch(e)
-  {
-    return e
+  catch(e) {
+    throw e
   }
-  finally
-  {
+  finally {
     conn.end()
   }
 
   return obj
 }
 
-exports.insert = async function (table, id) {
+exports.insert = async function insert (table, id) {
   var conn
   if (table == 'users')
     conn = new Users()
@@ -155,30 +149,6 @@ exports.insert = async function (table, id) {
   conn.begin()
   var obj = await conn.insert(['*'], id)
   conn.end()
-
-  return obj
-}
-
-exports.authenticateUser = async function (emailAddress, passwordHash) {
-  var conn = new Users()
-  conn.begin()
-  var obj = await conn.authenticateUser(emailAddress, passwordHash)
-  conn.end()
-
-  return obj
-}
-
-exports.insertUser = async function (firstName, secondName, emailAddress, isAdmin, passwordHash) {
-  var conn = new Users()
-  conn.begin()
-  var obj
-  try {
-    obj = await conn.insert(firstName, secondName, emailAddress, isAdmin, passwordHash)
-  } catch (e) {
-    obj = e
-  } finally {
-    conn.end()
-  }
 
   return obj
 }
