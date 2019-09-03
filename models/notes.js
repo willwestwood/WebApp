@@ -2,15 +2,15 @@ var db = require('./../db/mysql')
 
 var exports = module.exports = {}
 
-exports.add = async function (note, user, contact) {
+async function add(note) {
   var conn = new db.Notes()
   var obj = {}
   try {
     conn.begin()
     obj = await conn.insert(
-      note,
-      user.id,
-      contact.id)
+      note.message,
+      note.userId,
+      note.contactId)
   } catch (e) {
     console.log(e)
     throw e
@@ -18,10 +18,11 @@ exports.add = async function (note, user, contact) {
     conn.end()
   }
 
-  return obj
+  return await get({id: obj.insertId})
 }
+exports.add = add;
 
-exports.get = async function (note) {
+async function get(note) {
   var names = ['id', 'contactId', 'userId', 'note', 'udpatedAt']
   var values = [note.id, note.contactId, note.userId, note.note, note.updatedAt]
 
@@ -40,3 +41,4 @@ exports.get = async function (note) {
   }
   return obj
 }
+exports.get = get;

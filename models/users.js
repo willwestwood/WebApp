@@ -8,7 +8,7 @@ function hash(input)
   return crypto.createHash('sha1').update(input).digest('hex');
 }
 
-exports.authenticate = async function (emailAddress, password) {
+exports.authenticate = async function authenticate(emailAddress, password) {
   let conn = new db.Users()
   conn.begin()
   let res = await conn.getSalt(emailAddress)
@@ -26,7 +26,7 @@ exports.authenticate = async function (emailAddress, password) {
   return obj
 }
 
-exports.add = async function (newUser) {
+exports.add = async function add(newUser) {
   var salt = crypto.randomBytes(20).toString('hex');
 
   var conn = new db.Users()
@@ -48,10 +48,10 @@ exports.add = async function (newUser) {
     conn.end()
   }
 
-  return obj
+  return await get({id: obj.insertId})
 }
 
-exports.get = async function (user) {
+async function get(user) {
   var names = ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash']
   var values = [user.id, user.firstName, user.secondName, user.emailAddress, user.isAdmin, user.passwordHash]
 
@@ -70,3 +70,4 @@ exports.get = async function (user) {
   }
   return obj
 }
+exports.get = get;

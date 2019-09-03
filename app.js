@@ -1,7 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-var db = require('./db/mysql')
 var users = require('./models/users')
 var notes = require('./models/notes')
 var logger = require('morgan');
@@ -142,10 +141,11 @@ router.get('/notes', (req, res) => {
 });
 
 router.post('/notes', (req, res) => {
-  notes.add(
-    req.query.note,
-    { id: req.query.userId },
-    { id: req.query.contactId })
+  notes.add({
+    message: req.query.note,
+    userId: req.query.userId,
+    contactId: req.query.contactId
+  })
   .then(function(obj) {
     res.status(200).send({
       success: 'true',
