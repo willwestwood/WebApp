@@ -1,17 +1,34 @@
 var db = require('./../db/mysql')
+var crypto = require('crypto');
 
 var exports = module.exports = {}
 
-exports.authenticate = async function (emailAddress, passwordHash) {
-  var conn = new db.Users()
+function hash(input)
+{
+  return crypto.createHash('sha1').update(input).digest('hex');
+}
+
+exports.authenticate = async function (emailAddress, password) {
+  let conn = new db.Users()
   conn.begin()
-  var obj = await conn.authenticateUser(emailAddress, passwordHash)
+  let res = await conn.getSalt(emailAddress)
+  if (res.length == 0)
+  {
+    conn.end()
+    return new Error('Email address not found')
+  }
+  var obj = await conn.authenticateUser(emailAddress, hash(res[0].salt + '' + password))
   conn.end()
+
+  if (obj.length == 0)
+    return new Error('Incorrect password')
 
   return obj
 }
 
 exports.add = async function (newUser) {
+  var salt = crypto.randomBytes(20).toString('hex');
+
   var conn = new db.Users()
   var obj = {}
   try {
@@ -21,7 +38,9 @@ exports.add = async function (newUser) {
       newUser.secondName,
       newUser.emailAddress,
       newUser.isAdmin,
-      newUser.passwordHash)
+      hash(salt + '' + newUser.password),
+      salt
+    )
   } catch (e) {
     console.log(e)
     throw e

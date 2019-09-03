@@ -24,13 +24,30 @@ class MySqlConnection {
     this._connection.end();
   }
 
-  select(names, values) {
-    var selectStr = 'SELECT * FROM ' + this._table
+  executeQuery(query)
+  {
+    var conn = this._connection
+    return new Promise(function (resolve, reject) {
+      try {
+        conn.query(query, function (err, rows, fields) {
+          if (err)
+            reject(err)
 
-    var length = Math.min(names.length, values.length)
+          resolve(rows)
+        });
+      } catch (e) {
+        reject(e)
+      }
+    });
+  }
+
+  select(names, values) {
+    let selectStr = 'SELECT * FROM ' + this._table
+
+    let length = Math.min(names.length, values.length)
     if(length > 0) {
-      var validWhereClause = false
-      for(var i = 0; i < length; i++) {
+      let validWhereClause = false
+      for(let i = 0; i < length; i++) {
         if (names[i] == undefined || values[i] == undefined)
           continue
 
@@ -45,37 +62,7 @@ class MySqlConnection {
       }
     }
 
-    console.log(selectStr)
-
-    var conn = this._connection
-    return new Promise(function (resolve, reject) {
-      try {
-        conn.query(selectStr, function (err, rows, fields) {
-          if (err)
-            reject(err)
-
-          resolve(rows)
-        });
-      } catch (e) {
-        reject(e)
-      }
-    });
-  }
-
-  insert(insertStr) {
-    var conn = this._connection
-    return new Promise(function (resolve, reject) {
-      try {
-        conn.query(insertStr, function (err, result, fields) {
-          if (err)
-            reject(err)
-
-          resolve(result)
-        });
-      } catch (e) {
-        reject(e)
-      }
-    });
+    return this.executeQuery(selectStr)
   }
 }
 
@@ -92,43 +79,58 @@ exports.Users = class Users extends MySqlConnection {
     return super.select(names, values)
   }
 
-  insert(firstName, secondName, emailAddress, isAdmin, passwordHash) {
-    var insertStr = "INSERT INTO"
+  insert(firstName, secondName, emailAddress, isAdmin, passwordHash, salt) {
+    let insertStr = "INSERT INTO"
     insertStr += ' ' + super.table()
-    insertStr += ' (firstName, secondName, emailAddress, isAdmin, passwordHash) '
-    insertStr += "VALUES ('" + firstName + "', '" + secondName + "', '" + emailAddress + "', " + isAdmin + ", '" + passwordHash + "')"
-    return super.insert(insertStr)
+    insertStr += ' (firstName, secondName, emailAddress, isAdmin, passwordHash, salt) '
+    insertStr += "VALUES ('" + firstName + "', '" + secondName + "', '" + emailAddress + "', " + isAdmin + ", '" + passwordHash + "', '" + salt + "')"
+    return super.executeQuery(insertStr)
   }
 
   authenticateUser(emailAddress, passwordHash) {
-    var selectStr = 'SELECT ID FROM ' + super.table()
+    let selectStr = 'SELECT ID FROM ' + super.table()
     selectStr += ' WHERE emailAddress = "' + emailAddress + '" AND passwordHash = "' + passwordHash + '"'
+    return super.executeQuery(selectStr)
+  }
 
-    var conn = this._connection
-    return new Promise(function (resolve, reject) {
-      try {
-        conn.query(selectStr, function (err, rows, fields) {
-          if (err)
-            reject(err)
-          else
-            resolve(rows)
-        });
-      } catch (e) {
-        reject(e)
-      }
-    });
+  getSalt(emailAddress) {
+    let selectStr = 'SELECT salt FROM ' + super.table()
+    selectStr += ' WHERE emailAddress = "' + emailAddress + '"'
+    return super.executeQuery(selectStr)
+  }
+}
+
+exports.Notes = class Notes extends MySqlConnection {
+  constructor() {
+    super('notes')
+  }
+
+  columns() {
+    return ['id', 'contactId', 'userId', 'note', 'updatedAt']
+  }
+
+  select(names, values) {
+    return super.select(names, values)
+  }
+
+  insert(note, userId, contactId) {
+    let insertStr = "INSERT INTO"
+    insertStr += ' ' + super.table()
+    insertStr += ' (contactId, userId, note) '
+    insertStr += "VALUES ('" + contactId + "', '" + userId + "', '" + note + "')"
+    return super.executeQuery(insertStr)
   }
 }
 
 exports.select = async function select (table, id) {
   var conn
   if (table == 'users')
-    conn = new Users()
+    onn = new Users()
   else
     conn = new MySqlConnection(table)
   try {
     conn.begin()
-    var obj = await conn.select(['*'], id)
+    var obj = await conn.select(['id'], [id])
   }
   catch(e) {
     throw e
@@ -136,19 +138,6 @@ exports.select = async function select (table, id) {
   finally {
     conn.end()
   }
-
-  return obj
-}
-
-exports.insert = async function insert (table, id) {
-  var conn
-  if (table == 'users')
-    conn = new Users()
-  else
-    conn = new MySqlConnection(table)
-  conn.begin()
-  var obj = await conn.insert(['*'], id)
-  conn.end()
 
   return obj
 }

@@ -8,7 +8,8 @@ CREATE TABLE crm.users (
  secondName VARCHAR(255) NOT NULL,
  emailAddress VARCHAR(255) NOT NULL,
  isAdmin BOOLEAN NOT NULL,
- passwordHash varchar(60) NOT NULL,
+ passwordHash VARCHAR(255) NOT NULL,
+ salt VARCHAR(255) NOT NULL,
  PRIMARY KEY (id),
  UNIQUE (emailAddress)
  );
@@ -39,14 +40,14 @@ CREATE TABLE crm.users (
  PRIMARY KEY (id)
  );
  
-INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash)
-VALUES ('William', 'Westwood', 'willjwestwood@gmail.com', TRUE, '6d18f698b58037ee33e036773f5ba8db60fd63d1');
+INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt)
+VALUES ('William', 'Westwood', 'willjwestwood@gmail.com', TRUE, 'ebb8377e06760d13633a5d436fdfee494d93090d', 'ccd9d6271bea792615a5cf22642e9563c485573d');
 
-INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash)
-VALUES ('Lorna', 'Westwood', 'lorna@company.uk', FALSE, '6d18f698b58037ee33e036773f5ba8db60fd63d1');
+INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt)
+VALUES ('Lorna', 'Westwood', 'lorna@company.uk', FALSE, 'a521b50652e163f73018cfb5808c9b1f4c11f49f', '04261b90d25e5c12a2ff0b0385cb2314604c0d8b');
 
-INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash)
-VALUES ('Louisa', 'Briguglio', 'louisa@gmail.com', TRUE, '6d18f698b58037ee33e036773f5ba8db60fd63d1');
+INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt)
+VALUES ('Louisa', 'Briguglio', 'louisa@gmail.com', TRUE, '32cefc1cc349142e71a6a1d209f9f29b09b6328e', '0411c8726f72a2e339f4e303d72f87322b589e7b');
 
 INSERT INTO crm.companies
 VALUES (0, 'Company Ltd', '20 Business Park, London, NW1 5RP', '+442095 551133');
