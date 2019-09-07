@@ -72,7 +72,11 @@ exports.Users = class Users extends MySqlConnection {
   }
 
   columns() {
-    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash']
+    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash', 'salt']
+  }
+
+  columnsNoPassword() {
+    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin']
   }
 
   select(names, values) {
@@ -88,8 +92,16 @@ exports.Users = class Users extends MySqlConnection {
   }
 
   authenticateUser(emailAddress, passwordHash) {
-    let selectStr = 'SELECT ID FROM ' + super.table()
+    let selectStr = "SELECT "
+    for(var i = 0; i < this.columnsNoPassword().length; i++)
+    {
+      selectStr += this.columnsNoPassword()[i] + ' '
+      if (i != this.columnsNoPassword().length - 1)
+        selectStr += ','
+    }
+    selectStr += 'FROM ' + super.table()
     selectStr += ' WHERE emailAddress = "' + emailAddress + '" AND passwordHash = "' + passwordHash + '"'
+
     return super.executeQuery(selectStr)
   }
 

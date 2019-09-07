@@ -52,7 +52,7 @@ exports.add = async function add(newUser) {
 }
 
 async function get(user) {
-  var names = ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash']
+  var names = ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin']
   var values = [user.id, user.firstName, user.secondName, user.emailAddress, user.isAdmin, user.passwordHash]
 
   var conn = new db.Users()
