@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var notes = require('../models/notes');
 
 var exports = module.exports = {}
@@ -25,9 +26,18 @@ exports.get = (req, res) => {
 }
 
 exports.add = (req, res) => {
+    if (!_.has(req.query, 'note')
+        || !_.has(req.query, 'contactId')) {
+        res.status(200).send({
+            success: 'false',
+            message: 'missing params',
+            obj: req.query
+        });
+    }
+
     notes.add({
         message: req.query.note,
-        userId: req.query.userId,
+        userId: req.user.id,
         contactId: req.query.contactId
     })
     .then(function(obj) {

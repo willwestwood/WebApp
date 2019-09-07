@@ -35,6 +35,7 @@ exports.add = (req, res) => {
             message: 'missing params',
             obj: req.query
         });
+        return
     }
 
     users.add({
