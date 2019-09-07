@@ -1,5 +1,6 @@
 var db = require('./../db/mysql')
 var crypto = require('crypto');
+var _ = require('lodash');
 
 var exports = module.exports = {}
 
@@ -52,8 +53,8 @@ exports.add = async function add(newUser) {
 }
 
 async function get(user) {
-  var names = ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin']
-  var values = [user.id, user.firstName, user.secondName, user.emailAddress, user.isAdmin, user.passwordHash]
+  var names = ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'pending']
+  var values = [user.id, user.firstName, user.secondName, user.emailAddress, user.isAdmin, user.pending]
 
   var conn = new db.Users()
   var obj = {}
@@ -71,3 +72,13 @@ async function get(user) {
   return obj
 }
 exports.get = get;
+
+exports.isPending = async (user) => {
+  var res = await get(user)
+  if(res.length > 0)
+    if(_.has(res[0], 'pending'))
+      return res[0].pending
+    else
+      return true
+  return true
+}

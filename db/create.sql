@@ -10,6 +10,7 @@ CREATE TABLE crm.users (
  isAdmin BOOLEAN NOT NULL,
  passwordHash VARCHAR(255) NOT NULL,
  salt VARCHAR(255) NOT NULL,
+ pending BOOLEAN DEFAULT TRUE,
  PRIMARY KEY (id),
  UNIQUE (emailAddress)
  );
@@ -40,8 +41,11 @@ CREATE TABLE crm.users (
  PRIMARY KEY (id)
  );
  
-INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt)
-VALUES ('William', 'Westwood', 'willjwestwood@gmail.com', TRUE, 'ebb8377e06760d13633a5d436fdfee494d93090d', 'ccd9d6271bea792615a5cf22642e9563c485573d');
+ INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt, pending)
+VALUES ('Admin', '', 'admin', TRUE, 'a3559dbbd6fbb664893c1a290491efa56da76f8e', 'd30fbb9680b985647a46eeff770336bc126a3aab', FALSE);
+ 
+INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt, pending)
+VALUES ('William', 'Westwood', 'willjwestwood@gmail.com', TRUE, 'ebb8377e06760d13633a5d436fdfee494d93090d', 'ccd9d6271bea792615a5cf22642e9563c485573d', FALSE);
 
 INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt)
 VALUES ('Lorna', 'Westwood', 'lorna@company.uk', FALSE, 'a521b50652e163f73018cfb5808c9b1f4c11f49f', '04261b90d25e5c12a2ff0b0385cb2314604c0d8b');

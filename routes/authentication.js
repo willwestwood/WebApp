@@ -12,7 +12,7 @@ exports.authenticate = (req, res) => {
 
     users.authenticate(username, password).then(function(obj) {
       if (obj.length > 0) {
-        let token = jwt.sign(obj, privateKey, {
+        let token = jwt.sign(obj[0], privateKey, {
             expiresIn: 30 * 60 // expires in half an hour
         });
         console.log(token);
@@ -39,7 +39,7 @@ exports.authenticate = (req, res) => {
     })
 }
 
-exports.validateToken = (req, res, next) => {
+exports.validateToken = async (req, res, next) => {
     // check header or url parameters or post parameters for token
     let token = req.body.token || req.query.token || req.headers['x-access-token'];
 
@@ -53,11 +53,29 @@ exports.validateToken = (req, res, next) => {
                     message: 'Failed to authenticate token.'
                 });
             } else {
-                // if everything is good, save to request for use in other routes
-                console.log("Payload: ")
-                console.log(decoded)
-                req.decoded = decoded;
-                next();
+                users.isPending(decoded)
+                .then(function(pending) {
+                    if (pending) {
+                        return res.status(403).send({
+                            success: false,
+                            message: 'Awaiting approval'
+                        });
+                    }
+                    else {
+                        // if everything is good, save to request for use in other routes
+                        console.log("Payload: ")
+                        console.log(decoded)
+                        req.decoded = decoded;
+                        next();
+                    }
+                })
+                .catch(function(err) {
+                    return res.status(403).send({
+                        success: false,
+                        message: 'Approval status unkown',
+                        error: err
+                    });
+                })
             }
         });
     } else {

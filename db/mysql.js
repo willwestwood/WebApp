@@ -72,11 +72,11 @@ exports.Users = class Users extends MySqlConnection {
   }
 
   columns() {
-    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash', 'salt']
+    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash', 'salt', 'pending']
   }
 
   columnsNoPassword() {
-    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin']
+    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'pending']
   }
 
   select(names, values) {
