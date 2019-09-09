@@ -60,7 +60,7 @@ async function get(user) {
   var obj = {}
   try {
     conn.begin()
-    obj = await conn.select(names, values)
+    obj = await conn.genericSelect(names, values)
   }
   catch (e) {
     console.log(e)
@@ -76,8 +76,8 @@ exports.get = get;
 exports.isPending = async (user) => {
   var res = await get(user)
   if(res.length > 0)
-    if(_.has(res[0], 'pending'))
-      return res[0].pending
+    if(_.has(res[0], 'isPending'))
+      return res[0].isPending
     else
       return true
   return true

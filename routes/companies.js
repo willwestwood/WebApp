@@ -1,35 +1,31 @@
 var _ = require('lodash');
-var users = require('../models/users');
+var companies = require('../models/companies');
 
 var exports = module.exports = {}
 
 exports.get = (req, res) => {
-    users.get({
+    companies.get({
         id: req.query.id,
-        firstName: req.query.firstName,
-        secondName: req.query.secondName,
-        emailAddress: req.query.emailAddress,
-        isAdmin: req.query.isAdmin
+        name: req.query.name,
+        address: req.query.address,
+        telephone: req.query.telephone
     })
     .then(function(obj) {
         res.status(200).send({
         success: 'true',
         message: 'retrieved successfully',
-        users: obj
+        obj: obj
         })
     })
     .catch(err => res.status(200).send({
         success: 'false',
         message: 'not retrieved',
-        users: err
+        error: err
     }));
 }
 
 exports.add = (req, res) => {
-    if (!_.has(req.query, 'emailAddress')
-        || !_.has(req.query, 'password')
-        || !_.has(req.query, 'firstName')
-        || !_.has(req.query, 'secondName')) {
+    if (!_.has(req.query, 'name')) {
         res.status(200).send({
             success: 'false',
             message: 'missing params',
@@ -38,18 +34,16 @@ exports.add = (req, res) => {
         return
     }
 
-    users.add({
-        emailAddress: req.query.emailAddress,
-        password: req.query.password,
-        firstName: req.query.firstName,
-        secondName: req.query.secondName,
-        isAdmin: false
+    companies.add({
+        name: req.query.name,
+        address: req.query.address,
+        telephone: req.query.telephone
     })
     .then(function(obj) {
         res.status(200).send({
-            success: 'true',
-            message: 'registered successfully',
-            obj: obj
+        success: 'true',
+        message: 'added successfully',
+        obj: obj
         })
     })
     .catch(err => res.status(200).send({

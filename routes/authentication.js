@@ -62,9 +62,6 @@ exports.validateToken = async (req, res, next) => {
                         });
                     }
                     else {
-                        // if everything is good, save to request for use in other routes
-                        console.log("Payload: ")
-                        console.log(decoded)
                         req.user = decoded;
                         next();
                     }

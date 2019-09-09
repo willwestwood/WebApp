@@ -33,10 +33,11 @@ exports.add = (req, res) => {
             message: 'missing params',
             obj: req.query
         });
+        return
     }
 
     notes.add({
-        message: req.query.note,
+        note: req.query.note,
         userId: req.user.id,
         contactId: req.query.contactId
     })

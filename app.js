@@ -38,6 +38,10 @@ router.post('/register', routes.users.add);
 router.get('/notes', routes.notes.get);
 router.post('/notes', routes.notes.add);
 
+// companies
+router.get('/companies', routes.companies.get);
+router.post('/companies', routes.companies.add);
+
 // default
 router.use(function(req, res, next) {
     console.log('Something is happening.');

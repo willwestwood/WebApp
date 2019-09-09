@@ -1,22 +1,30 @@
 var mysql = require('mysql')
+var utils = require('./../utils.js')
 
 var exports = module.exports = {}
 
 class MySqlConnection {
-  constructor(table) {
+  constructor(table, columns, selectCols, insertCols) {
     this._table = table;
-    this._connectionStr = {
+    this._columns = columns
+    this._selectCols = selectCols
+    this._insertCols = insertCols
+  }
+
+  table() { return this._table }
+  columns() { return this._columns }
+  selectColumns() { return this._selectCols }
+  insertColumns() { return this._insertCols }
+
+  begin() {
+    let connectionStr = {
       host: 'localhost',
       user: 'root',
       password: 'testtest',
       database: 'crm'
     }
-  }
 
-  table() { return this._table }
-
-  begin() {
-    this._connection = mysql.createConnection(this._connectionStr);
+    this._connection = mysql.createConnection(connectionStr);
     this._connection.connect();
   }
 
@@ -26,6 +34,8 @@ class MySqlConnection {
 
   executeQuery(query)
   {
+    console.log(query)
+
     var conn = this._connection
     return new Promise(function (resolve, reject) {
       try {
@@ -41,115 +51,113 @@ class MySqlConnection {
     });
   }
 
-  select(names, values) {
-    let selectStr = 'SELECT * FROM ' + this._table
+  select(selectCols, whereNames, whereValues) {
+    let selectStr = 'SELECT '
+    selectStr += utils.buildCommaSeparatedString(selectCols)
+    selectStr += ' FROM ' + this._table
 
-    let length = Math.min(names.length, values.length)
-    if(length > 0) {
-      let validWhereClause = false
-      for(let i = 0; i < length; i++) {
-        if (names[i] == undefined || values[i] == undefined)
-          continue
+    let query = utils.sanitiseQuery(whereNames, whereValues)
 
-        if (!validWhereClause) {
-          selectStr += ' WHERE'
-          validWhereClause = true
-        }
-        else
-          selectStr += ' AND '
+    if(query.length > 0) {
+      selectStr += ' WHERE'
+      for(let i = 0; i < query.length; i++) {
+        if (i > 0)
+          selectStr += ' AND'
 
-        selectStr += ' ' + names[i] + ' = \'' + values[i] + '\''
+        selectStr += ' ' + query.names[i] + ' = \'' + query.values[i] + '\''
       }
     }
 
     return this.executeQuery(selectStr)
   }
+
+  genericSelect(whereNames, whereValues) {
+    return this.select(this.selectColumns(), whereNames, whereValues)
+  }
+
+  insert(values) {
+    let query = utils.sanitiseQuery(this.insertColumns(), values)
+
+    let insertStr = "INSERT INTO"
+    insertStr += ' ' + this.table()
+    insertStr += ' ('
+    insertStr += utils.buildCommaSeparatedString(query.names)
+    insertStr += ") VALUES ("
+    insertStr += utils.buildCommaSeparatedString(query.values, true)
+    insertStr += ")"
+    return this.executeQuery(insertStr)
+  }
 }
 
 exports.Users = class Users extends MySqlConnection {
   constructor() {
-    super('users')
+    var columns = {
+      id: 'id',
+      firstName: 'firstName',
+      secondName: 'secondName',
+      emailAddress: 'emailAddress',
+      passwordHash: 'passwordHash',
+      salt: 'salt',
+      isAdmin: 'isAdmin',
+      isPending: 'isPending',
+      isDeleted: 'isDeleted'
+    }
+
+    var selectCols = [columns.id, columns.firstName, columns.secondName, columns.emailAddress, columns.isAdmin, columns.isPending]
+    var insertCols = [columns.firstName, columns.secondName, columns.emailAddress, columns.passwordHash, columns.salt, columns.isAdmin, columns.isPending]
+    super('users', columns, selectCols, insertCols)
   }
 
-  columns() {
-    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'passwordHash', 'salt', 'pending']
-  }
-
-  columnsNoPassword() {
-    return ['id', 'firstName', 'secondName', 'emailAddress', 'isAdmin', 'pending']
-  }
-
-  select(names, values) {
-    return super.select(names, values)
-  }
-
-  insert(firstName, secondName, emailAddress, isAdmin, passwordHash, salt) {
-    let insertStr = "INSERT INTO"
-    insertStr += ' ' + super.table()
-    insertStr += ' (firstName, secondName, emailAddress, isAdmin, passwordHash, salt) '
-    insertStr += "VALUES ('" + firstName + "', '" + secondName + "', '" + emailAddress + "', " + isAdmin + ", '" + passwordHash + "', '" + salt + "')"
-    return super.executeQuery(insertStr)
+  insert(firstName, secondName, emailAddress, isAdmin, passwordHash, salt, isPending = true) {
+    return super.insert([firstName, secondName, emailAddress, passwordHash, salt, isAdmin, isPending])
   }
 
   authenticateUser(emailAddress, passwordHash) {
-    let selectStr = "SELECT "
-    for(var i = 0; i < this.columnsNoPassword().length; i++)
-    {
-      selectStr += this.columnsNoPassword()[i] + ' '
-      if (i != this.columnsNoPassword().length - 1)
-        selectStr += ','
-    }
-    selectStr += 'FROM ' + super.table()
-    selectStr += ' WHERE emailAddress = "' + emailAddress + '" AND passwordHash = "' + passwordHash + '"'
-
-    return super.executeQuery(selectStr)
+    return super.genericSelect([super.columns().emailAddress, super.columns().passwordHash], [emailAddress, passwordHash])
   }
 
   getSalt(emailAddress) {
-    let selectStr = 'SELECT salt FROM ' + super.table()
-    selectStr += ' WHERE emailAddress = "' + emailAddress + '"'
-    return super.executeQuery(selectStr)
+    return super.select([super.columns().salt], [super.columns().emailAddress], [emailAddress])
   }
 }
 
 exports.Notes = class Notes extends MySqlConnection {
   constructor() {
-    super('notes')
-  }
+    var columns = {
+      id: 'id',
+      contactId: 'contactId',
+      userId: 'userId',
+      note: 'note',
+      updatedAt: 'updatedAt',
+      isDeleted: 'isDeleted'
+    }
 
-  columns() {
-    return ['id', 'contactId', 'userId', 'note', 'updatedAt']
-  }
-
-  select(names, values) {
-    return super.select(names, values)
+    var selectCols = [columns.id, columns.contactId, columns.userId, columns.note, columns.updatedAt, columns.isDeleted]
+    var insertCols = [columns.contactId, columns.userId, columns.note]
+    super('notes', columns, selectCols, insertCols)
   }
 
   insert(note, userId, contactId) {
-    let insertStr = "INSERT INTO"
-    insertStr += ' ' + super.table()
-    insertStr += ' (contactId, userId, note) '
-    insertStr += "VALUES ('" + contactId + "', '" + userId + "', '" + note + "')"
-    return super.executeQuery(insertStr)
+    return super.insert([contactId, userId, note])
   }
 }
 
-exports.select = async function select (table, id) {
-  var conn
-  if (table == 'users')
-    onn = new Users()
-  else
-    conn = new MySqlConnection(table)
-  try {
-    conn.begin()
-    var obj = await conn.select(['id'], [id])
-  }
-  catch(e) {
-    throw e
-  }
-  finally {
-    conn.end()
+exports.Companies = class Companies extends MySqlConnection {
+  constructor() {
+    var columns = {
+      id: 'id',
+      name: 'name',
+      address: 'address',
+      telephone: 'telephone',
+      isDeleted: 'isDeleted'
+    }
+
+    var selectCols = [columns.id, columns.name, columns.address, columns.telephone, columns.isDeleted]
+    var insertCols = [columns.name, columns.address, columns.telephone]
+    super('companies', columns, selectCols, insertCols)
   }
 
-  return obj
+  insert(name, address, telephone) {
+    return super.insert([name, address, telephone])
+  }
 }
