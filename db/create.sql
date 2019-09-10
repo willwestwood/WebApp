@@ -28,10 +28,10 @@ PRIMARY KEY(id)
 CREATE TABLE crm.contacts (
 id INT NOT NULL AUTO_INCREMENT,
 firstName VARCHAR(255) NOT NULL,
-secondName VARCHAR(255) NOT NULL,
-emailAddress VARCHAR(255) NOT NULL,
-isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
+secondName VARCHAR(255),
+emailAddress VARCHAR(255),
 companyId INT,
+isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
 PRIMARY KEY (id),
 FOREIGN KEY (companyId) REFERENCES users(id)
 );
@@ -64,13 +64,13 @@ INSERT INTO crm.companies (name, address, telephone)
 VALUES ('Company Ltd', '20 Business Park, London, NW1 5RP', '+442095 551133');
 
 INSERT INTO crm.companies (name, address, telephone)
-VALUES ('Other Company Ltd', '21 Business Park, London, NW1 5RP', '+442095 5511334';
+VALUES ('Other Company Ltd', '21 Business Park, London, NW1 5RP', '+442095 5511334');
 
 INSERT INTO crm.contacts (firstName, secondName, emailAddress, companyId)
 VALUES ('Graham', 'Westwood', 'gwestwood@company.uk', 1);
 
 INSERT INTO crm.contacts (firstName, secondName, emailAddress, companyId)
-VALUES ('CHarlie', 'Westwood', 'charlie@company.uk', 2);
+VALUES ('Charlie', 'Westwood', 'charlie@company.uk', 2);
 
 INSERT INTO crm.notes(contactId, userId, note)
 VALUES (1, 2, 'Test note');

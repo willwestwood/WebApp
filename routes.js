@@ -4,6 +4,7 @@ exports.authentication = require('./routes/authentication');
 exports.users = require('./routes/users');
 exports.notes = require('./routes/notes');
 exports.companies = require('./routes/companies');
+exports.contacts = require('./routes/contacts');
 
 exports.test = function(req, res) {
     return res.json({

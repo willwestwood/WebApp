@@ -42,6 +42,10 @@ router.post('/notes', routes.notes.add);
 router.get('/companies', routes.companies.get);
 router.post('/companies', routes.companies.add);
 
+// contacts
+router.get('/contacts', routes.contacts.get);
+router.post('/contacts', routes.contacts.add);
+
 // default
 router.use(function(req, res, next) {
     console.log('Something is happening.');

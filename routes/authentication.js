@@ -8,34 +8,33 @@ const privateKey = "384a2d8G86dA713"
 exports.authenticate = (req, res) => {
     let username = req.body.user;
     let password = req.body.password;
-    let isUserFound = false;
 
     users.authenticate(username, password).then(function(obj) {
-      if (obj.length > 0) {
-        let token = jwt.sign(obj[0], privateKey, {
-            expiresIn: 30 * 60 // expires in half an hour
-        });
-        console.log(token);
-        res.json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-        });
-      }
-      else {
-        if(obj instanceof Error) {
-          res.json({
-              success: false,
-              message: obj.message
-          });
+        if (obj.length > 0) {
+            let token = jwt.sign(obj[0], privateKey, {
+                expiresIn: 30 * 60 // expires in half an hour
+            });
+            console.log(token);
+            res.json({
+                success: true,
+                message: 'Enjoy your token!',
+                token: token
+            });
         }
         else {
-          res.json({
-              success: false,
-              message: 'Could not authenticate'
-          });
+            if(obj instanceof Error) {
+            res.json({
+                success: false,
+                message: obj.message
+            });
+            }
+            else {
+            res.json({
+                success: false,
+                message: 'Could not authenticate'
+            });
+            }
         }
-      }
     })
 }
 
