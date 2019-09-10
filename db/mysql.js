@@ -176,13 +176,12 @@ exports.Contacts = class Contacts extends MySqlConnection {
             id: 'id',
             firstName: 'firstName',
             secondName: 'secondName',
-            emailAddress: 'emailAddress',
             companyId: 'companyId',
             isDeleted: 'isDeleted'
         }
 
-        var selectCols = [columns.id, columns.firstName, columns.secondName, columns.emailAddress, columns.companyId, columns.isDeleted]
-        var insertCols = [columns.firstName, columns.secondName, columns.emailAddress, columns.companyId]
+        var selectCols = [columns.id, columns.firstName, columns.secondName, columns.companyId, columns.isDeleted]
+        var insertCols = [columns.firstName, columns.secondName, columns.companyId]
         super('contacts', columns, selectCols, insertCols)
     }
 

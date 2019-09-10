@@ -4,6 +4,15 @@ var _ = require('lodash');
 
 var exports = module.exports = {}
 
+var initialised = false
+var cache = []
+exports.initialise = function() {
+    get().then(obj => {
+        cache = obj
+        initialised = true
+    });
+}
+
 function hash(input)
 {
     return crypto.createHash('sha1').update(input).digest('hex');
@@ -52,7 +61,16 @@ exports.add = async function add(newUser) {
     return await get({id: obj.insertId})
 }
 
-async function get(user) {
+async function get(user = {}) {
+    if(initialised)
+    {
+        console.log('CACHED')
+        return cache
+        // return cache.filter(obj => {
+        //     return obj.b === 6
+        //   })
+    }
+
     var values = [user.id, user.firstName, user.secondName, user.emailAddress, user.isAdmin, user.isPending, user.isDeleted]
 
     var conn = new db.Users()

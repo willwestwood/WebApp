@@ -29,8 +29,9 @@ CREATE TABLE crm.contacts (
 id INT NOT NULL AUTO_INCREMENT,
 firstName VARCHAR(255) NOT NULL,
 secondName VARCHAR(255),
-emailAddress VARCHAR(255),
 companyId INT,
+title VARCHAR(255),
+position VARCHAR(255),
 isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
 PRIMARY KEY (id),
 FOREIGN KEY (companyId) REFERENCES users(id)
@@ -46,6 +47,22 @@ isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
 PRIMARY KEY (id),
 FOREIGN KEY (userId) REFERENCES users(id),
 FOREIGN KEY (contactId) REFERENCES contacts(id)
+);
+
+CREATE TABLE crm.phoneNumbers (
+    id INT NOT NULL AUTO_INCREMENT,
+    contactId INT NOT NULL,
+    phoneNumber VARCHAR(255),
+    PRIMARY KEY (id),
+    FOREIGN KEY (contactId) REFERENCES contacts(id)
+);
+
+CREATE TABLE crm.emailAddresses (
+    id INT NOT NULL AUTO_INCREMENT,
+    contactId INT NOT NULL,
+    emailAddress VARCHAR(255),
+    PRIMARY KEY (id),
+    FOREIGN KEY (contactId) REFERENCES contacts(id)
 );
  
 INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt, isPending)
@@ -66,14 +83,20 @@ VALUES ('Company Ltd', '20 Business Park, London, NW1 5RP', '+442095 551133');
 INSERT INTO crm.companies (name, address, telephone)
 VALUES ('Other Company Ltd', '21 Business Park, London, NW1 5RP', '+442095 5511334');
 
-INSERT INTO crm.contacts (firstName, secondName, emailAddress, companyId)
-VALUES ('Graham', 'Westwood', 'gwestwood@company.uk', 1);
+INSERT INTO crm.contacts (firstName, secondName, companyId)
+VALUES ('Graham', 'Westwood', 1);
 
-INSERT INTO crm.contacts (firstName, secondName, emailAddress, companyId)
-VALUES ('Charlie', 'Westwood', 'charlie@company.uk', 2);
+INSERT INTO crm.contacts (firstName, secondName, companyId)
+VALUES ('Charlie', 'Westwood', 2);
 
 INSERT INTO crm.notes(contactId, userId, note)
 VALUES (1, 2, 'Test note');
 
 INSERT INTO crm.notes(contactId, userId, note)
 VALUES (2, 4, 'Test note');
+
+INSERT INTO crm.phoneNumbers(contactId, phoneNumber)
+VALUES (1, '01234 567890');
+
+INSERT INTO crm.emailAddresses(contactId, emailAddress)
+VALUES (2, 'charlie@company.uk');

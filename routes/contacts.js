@@ -57,3 +57,7 @@ exports.add = (req, res) => {
         error: err.message
     }));
 }
+
+exports.initialise = function() {
+    contacts.initialise();
+}

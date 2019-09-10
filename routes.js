@@ -12,3 +12,8 @@ exports.test = function(req, res) {
         message: "You are authenticated and all set to consume our services."
     });
 }
+
+exports.initialise = function() {
+    exports.contacts.initialise();
+    exports.users.initialise();
+}
