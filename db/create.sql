@@ -19,8 +19,8 @@ UNIQUE (emailAddress)
 CREATE TABLE crm.companies (
 id INT NOT NULL AUTO_INCREMENT,
 name VARCHAR(255) NOT NULL,
-address TEXT,
-telephone VARCHAR(255),
+industry VARCHAR(255),
+type VARCHAR(255),
 isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
 PRIMARY KEY(id)
 );
@@ -51,18 +51,38 @@ FOREIGN KEY (contactId) REFERENCES contacts(id)
 
 CREATE TABLE crm.phoneNumbers (
     id INT NOT NULL AUTO_INCREMENT,
-    contactId INT NOT NULL,
+    contactId INT,
+    companyId INT,
     phoneNumber VARCHAR(255),
+    label VARCHAR(255),
+    precedence INT,
     PRIMARY KEY (id),
-    FOREIGN KEY (contactId) REFERENCES contacts(id)
+    FOREIGN KEY (contactId) REFERENCES contacts(id),
+    CONSTRAINT chk_null_phone CHECK (contactId IS NOT NULL OR companyId IS NOT NULL)
 );
 
 CREATE TABLE crm.emailAddresses (
     id INT NOT NULL AUTO_INCREMENT,
     contactId INT NOT NULL,
+    companyId INT,
     emailAddress VARCHAR(255),
+    label VARCHAR(255),
+    precedence INT,
     PRIMARY KEY (id),
-    FOREIGN KEY (contactId) REFERENCES contacts(id)
+    FOREIGN KEY (contactId) REFERENCES contacts(id),
+	CONSTRAINT chk_null_email CHECK (contactId IS NOT NULL OR companyId IS NOT NULL)
+);
+
+CREATE TABLE crm.addresses (
+    id INT NOT NULL AUTO_INCREMENT,
+    contactId INT NOT NULL,
+    companyId INT,
+    address VARCHAR(255),
+    label VARCHAR(255),
+    precedence INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (contactId) REFERENCES contacts(id),
+	CONSTRAINT chk_null_address CHECK (contactId IS NOT NULL OR companyId IS NOT NULL)
 );
  
 INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt, isPending)
@@ -77,11 +97,11 @@ VALUES ('Lorna', 'Westwood', 'lorna@company.uk', FALSE, 'a521b50652e163f73018cfb
 INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt)
 VALUES ('Louisa', 'Briguglio', 'louisa@gmail.com', TRUE, '32cefc1cc349142e71a6a1d209f9f29b09b6328e', '0411c8726f72a2e339f4e303d72f87322b589e7b');
 
-INSERT INTO crm.companies (name, address, telephone)
-VALUES ('Company Ltd', '20 Business Park, London, NW1 5RP', '+442095 551133');
+INSERT INTO crm.companies (name, type)
+VALUES ('Company Ltd', 'Customer');
 
-INSERT INTO crm.companies (name, address, telephone)
-VALUES ('Other Company Ltd', '21 Business Park, London, NW1 5RP', '+442095 5511334');
+INSERT INTO crm.companies (name, type)
+VALUES ('Other Company Ltd', 'Supplier');
 
 INSERT INTO crm.contacts (firstName, secondName, companyId)
 VALUES ('Graham', 'Westwood', 1);
@@ -95,8 +115,20 @@ VALUES (1, 2, 'Test note');
 INSERT INTO crm.notes(contactId, userId, note)
 VALUES (2, 4, 'Test note');
 
-INSERT INTO crm.phoneNumbers(contactId, phoneNumber)
-VALUES (1, '01234 567890');
+INSERT INTO crm.phoneNumbers(contactId, phoneNumber, label)
+VALUES (1, '01234 567890', 'Telephone 1');
+
+INSERT INTO crm.phoneNumbers(companyId, phoneNumber, label)
+VALUES (1, '+442095 551133', 'Telephone 2');
+
+INSERT INTO crm.phoneNumbers(companyId, phoneNumber)
+VALUES (2, '+442095 551134');
 
 INSERT INTO crm.emailAddresses(contactId, emailAddress)
 VALUES (2, 'charlie@company.uk');
+
+INSERT INTO crm.addresses(contactId, address)
+VALUES (1, '20 Business Park, London, NW1 5RP');
+
+INSERT INTO crm.addresses(contactId, address)
+VALUES (2, '21 Business Park, London, NW1 5RP');

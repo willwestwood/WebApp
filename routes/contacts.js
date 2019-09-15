@@ -8,9 +8,7 @@ exports.get = (req, res) => {
         id: req.query.id,
         companyId: req.query.companyId,
         firstName: req.query.firstName,
-        secondName: req.query.secondName,
-        emailAddress: req.query.emailAddress,
-        telephone: req.query.telephone
+        secondName: req.query.secondName
     })
     .then(function(obj) {
         res.status(200).send({
@@ -40,9 +38,7 @@ exports.add = (req, res) => {
     contacts.add({
         companyId: req.query.companyId,
         firstName: req.query.firstName,
-        secondName: req.query.secondName,
-        emailAddress: req.query.emailAddress,
-        telephone: req.query.telephone
+        secondName: req.query.secondName
     })
     .then(function(obj) {
         res.status(200).send({

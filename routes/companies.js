@@ -7,8 +7,8 @@ exports.get = (req, res) => {
     companies.get({
         id: req.query.id,
         name: req.query.name,
-        address: req.query.address,
-        telephone: req.query.telephone
+        type: req.query.type,
+        industry: req.query.industry
     })
     .then(function(obj) {
         res.status(200).send({
@@ -36,8 +36,8 @@ exports.add = (req, res) => {
 
     companies.add({
         name: req.query.name,
-        address: req.query.address,
-        telephone: req.query.telephone
+        type: req.query.type,
+        industry: req.query.industry
     })
     .then(function(obj) {
         res.status(200).send({

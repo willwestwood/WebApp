@@ -19,7 +19,6 @@ async function add(contact) {
         obj = await conn.insert(
             contact.firstName,
             contact.secondName,
-            contact.emailAddress,
             contact.companyId)
     } catch (e) {
         console.log(e)
@@ -42,7 +41,7 @@ async function get(contact = {}) {
         //   })
     }
 
-    var values = [contact.id, contact.firstName, contact.secondName, contact.emailAddress, contact.companyId, contact.isDeleted]
+    var values = [contact.id, contact.firstName, contact.secondName, contact.companyId, contact.isDeleted]
 
     var conn = new db.Contacts()
     var obj = {}

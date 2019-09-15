@@ -155,18 +155,17 @@ exports.Companies = class Companies extends MySqlConnection {
         var columns = {
             id: 'id',
             name: 'name',
-            address: 'address',
-            telephone: 'telephone',
-            isDeleted: 'isDeleted'
+            type: 'type',
+            industry: 'industry'
         }
 
-        var selectCols = [columns.id, columns.name, columns.address, columns.telephone, columns.isDeleted]
-        var insertCols = [columns.name, columns.address, columns.telephone]
+        var selectCols = [columns.id, columns.name, columns.type, columns.industry]
+        var insertCols = [columns.name, columns.type, columns.industry]
         super('companies', columns, selectCols, insertCols)
     }
 
-    insert(name, address, telephone) {
-        return super.insert([name, address, telephone])
+    insert(name, type, industry) {
+        return super.insert([name, type, industry])
     }
 }
 
@@ -185,7 +184,7 @@ exports.Contacts = class Contacts extends MySqlConnection {
         super('contacts', columns, selectCols, insertCols)
     }
 
-    insert(firstName, secondName, emailAddress, companyId) {
-        return super.insert([firstName, secondName, emailAddress, companyId])
+    insert(firstName, secondName, companyId) {
+        return super.insert([firstName, secondName, companyId])
     }
 }

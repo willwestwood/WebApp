@@ -9,8 +9,8 @@ async function add(company) {
         conn.begin()
         obj = await conn.insert(
             company.name,
-            company.address,
-            company.telephone)
+            company.type,
+            company.industry)
     } catch (e) {
         console.log(e)
         throw e
@@ -23,7 +23,7 @@ async function add(company) {
 exports.add = add;
 
 async function get(company) {
-    var values = [company.id, company.name, company.address, company.telephone, company.isDeleted]
+    var values = [company.id, company.name, company.type, company.industry]
 
     var conn = new db.Companies()
     var obj = {}
