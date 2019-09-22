@@ -65,11 +65,11 @@ exports.validateToken = async (req, res, next) => {
                         next();
                     }
                 })
-                .catch(function(err) {
+                .catch(function(err2) {
                     return res.status(403).send({
                         success: false,
                         message: 'Approval status unkown',
-                        error: err
+                        error: err2
                     });
                 })
             }

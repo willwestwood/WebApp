@@ -34,3 +34,14 @@ exports.sanitiseQuery = function (names, values) {
         length: length
     }
 }
+
+exports.where = function(searchQuery, obj)
+{
+    var match = true
+    Object.keys(searchQuery).forEach(e => {
+        if (obj[e] != undefined && searchQuery[e] != undefined)
+            if (obj[e] != searchQuery[e])
+                match = false
+    });
+    return match
+}

@@ -21,8 +21,9 @@ exports.get = (req, res) => {
     .catch(err => res.status(200).send({
         success: 'false',
         message: 'not retrieved',
-        users: err
-    }));
+        error: err.message
+        })
+    );
 }
 
 exports.add = (req, res) => {

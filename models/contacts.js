@@ -1,4 +1,5 @@
 var db = require('./../db/mysql')
+var utils = require('./../utils')
 
 var exports = module.exports = {}
 
@@ -34,11 +35,12 @@ exports.add = add;
 async function get(contact = {}) {
     if(initialised)
     {
-        console.log('CACHED')
-        return cache
-        // return cache.filter(obj => {
-        //     return obj.b === 6
-        //   })
+        console.log('Contacts retrieved')
+        console.log('Search params: ')
+        console.log(contact)
+        return cache.filter(obj => {
+            return utils.where(contact, obj)
+          });
     }
 
     var values = [contact.id, contact.firstName, contact.secondName, contact.companyId, contact.isDeleted]

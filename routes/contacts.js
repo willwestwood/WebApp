@@ -8,7 +8,8 @@ exports.get = (req, res) => {
         id: req.query.id,
         companyId: req.query.companyId,
         firstName: req.query.firstName,
-        secondName: req.query.secondName
+        secondName: req.query.secondName,
+        isDeleted: req.query.isDeleted
     })
     .then(function(obj) {
         res.status(200).send({

@@ -1,6 +1,7 @@
 var db = require('./../db/mysql')
 var crypto = require('crypto');
 var _ = require('lodash');
+var utils = require('./../utils')
 
 var exports = module.exports = {}
 
@@ -61,14 +62,17 @@ exports.add = async function add(newUser) {
     return await get({id: obj.insertId})
 }
 
-async function get(user = {}) {
-    if(initialised)
+async function get(user = {}, bypassCache = false) {
+    if(initialised && !bypassCache)
     {
-        console.log('CACHED')
-        return cache
-        // return cache.filter(obj => {
-        //     return obj.b === 6
-        //   })
+        console.log('Users retrieved')
+        console.log('Search params: ')
+        console.log(user)
+        //console.log(new Error())
+        //throw new Error("TEst error")
+        return cache.filter(obj => {
+            return utils.where(user, obj)
+          });
     }
 
     var values = [user.id, user.firstName, user.secondName, user.emailAddress, user.isAdmin, user.isPending, user.isDeleted]
@@ -91,7 +95,7 @@ async function get(user = {}) {
 exports.get = get;
 
 exports.isPending = async (user) => {
-    var res = await get(user)
+    var res = await get(user, true)
     if(res.length > 0)
         if(_.has(res[0], 'isPending'))
             return res[0].isPending
