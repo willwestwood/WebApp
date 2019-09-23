@@ -56,6 +56,7 @@ CREATE TABLE crm.phoneNumbers (
     phoneNumber VARCHAR(255),
     label VARCHAR(255),
     precedence INT,
+    isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (contactId) REFERENCES contacts(id),
     CONSTRAINT chk_null_phone CHECK (contactId IS NOT NULL OR companyId IS NOT NULL)
@@ -68,6 +69,7 @@ CREATE TABLE crm.emailAddresses (
     emailAddress VARCHAR(255),
     label VARCHAR(255),
     precedence INT,
+    isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (contactId) REFERENCES contacts(id),
 	CONSTRAINT chk_null_email CHECK (contactId IS NOT NULL OR companyId IS NOT NULL)
@@ -80,9 +82,26 @@ CREATE TABLE crm.addresses (
     address VARCHAR(255),
     label VARCHAR(255),
     precedence INT,
+    isDeleted BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (contactId) REFERENCES contacts(id),
 	CONSTRAINT chk_null_address CHECK (contactId IS NOT NULL OR companyId IS NOT NULL)
+);
+
+CREATE TABLE crm.history (
+	id INT NOT NULL AUTO_INCREMENT,
+    userId INT NOT NULL,
+    action VARCHAR(255),
+    previousValue VARCHAR(255),
+    newValue VARCHAR(255),
+    affectedUserId INT,
+    noteId INT,
+    contactId INT,
+    companyId INT,
+    phoneNumberId INT,
+    emailAddressId INT,
+    addressId INT,
+    PRIMARY KEY (id)
 );
  
 INSERT INTO crm.users (firstName, secondName, emailAddress, isAdmin, passwordHash, salt, isPending)

@@ -15,13 +15,13 @@ exports.get = (req, res) => {
         res.status(200).send({
         success: 'true',
         message: 'retrieved successfully',
-        obj: obj
+        contacts: obj
         })
     })
     .catch(err => res.status(200).send({
         success: 'false',
         message: 'not retrieved',
-        error: err
+        error: err.message
     }));
 }
 

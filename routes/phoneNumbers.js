@@ -1,34 +1,35 @@
 var _ = require('lodash');
-var companies = require('../models/companies');
+var phoneNumbers = require('../models/phoneNumbers');
 
 var exports = module.exports = {}
 
 exports.get = (req, res) => {
-    companies.get({
+    phoneNumbers.get({
         id: req.query.id,
-        name: req.query.name,
-        type: req.query.type,
-        industry: req.query.industry
+        companyId: req.query.companyId,
+        contactId: req.query.contactId,
+        phoneNumber: req.query.phoneNumber,
+        label: req.query.label,
+        isDeleted: req.query.isDeleted
     })
     .then(function(obj) {
         res.status(200).send({
         success: 'true',
         message: 'retrieved successfully',
-        obj: obj
+        phoneNumbers: obj
         })
     })
-    .catch(err => {
-        console.log(err.stack)
-        res.status(200).send({
+    .catch(err => res.status(200).send({
         success: 'false',
         message: 'not retrieved',
         error: err.message
-        })
-    });
+    }));
 }
 
 exports.add = (req, res) => {
-    if (!_.has(req.query, 'name')) {
+    if ((!_.has(req.query, 'companyId')
+    && !_.has(req.query, 'contactId'))
+        || !_.has(req.query, 'phoneNumber')) {
         res.status(200).send({
             success: 'false',
             message: 'missing params',
@@ -37,10 +38,10 @@ exports.add = (req, res) => {
         return
     }
 
-    companies.add({
-        name: req.query.name,
-        type: req.query.type,
-        industry: req.query.industry
+    phoneNumbers.add({
+        companyId: req.query.companyId,
+        firstName: req.query.firstName,
+        secondName: req.query.secondName
     })
     .then(function(obj) {
         res.status(200).send({
@@ -49,12 +50,13 @@ exports.add = (req, res) => {
         obj: obj
         })
     })
-    .catch(err => {
-        console.log(err.stack)
-        res.status(200).send({
+    .catch(err => res.status(200).send({
         success: 'false',
         message: 'error',
         error: err.message
-        })
-    });
+    }));
+}
+
+exports.initialise = function() {
+    phoneNumbers.initialise();
 }

@@ -188,3 +188,25 @@ exports.Contacts = class Contacts extends MySqlConnection {
         return super.insert([firstName, secondName, companyId])
     }
 }
+
+exports.PhoneNumbers = class PhoneNumbers extends MySqlConnection {
+    constructor() {
+        var columns = {
+            id: 'id',
+            contactId: 'contactId',
+            companyId: 'companyId',
+            phoneNumber: 'phoneNumber',
+            label: 'label',
+            precedence: 'precedence',
+            isDeleted: 'isDeleted'
+        }
+
+        var selectCols = [columns.id, columns.contactId, columns.companyId, columns.phoneNumber, columns.label, columns.precedence, columns.isDeleted]
+        var insertCols = [columns.contactId, columns.companyId, columns.phoneNumber, columns.label, columns.precedence]
+        super('phoneNumbers', columns, selectCols, insertCols)
+    }
+
+    insert(contactId, companyId, phoneNumber, label, precedence) {
+        return super.insert([contactId, companyId, phoneNumber, label, precedence])
+    }
+}

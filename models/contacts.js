@@ -13,14 +13,15 @@ exports.initialise = function() {
 }
 
 async function add(contact) {
-    var conn = new db.Contacts()
+    let conn = new db.Contacts()
     var obj = {}
     try {
         conn.begin()
         obj = await conn.insert(
             contact.firstName,
             contact.secondName,
-            contact.companyId)
+            contact.companyId
+        )
     } catch (e) {
         console.log(e)
         throw e
@@ -28,12 +29,15 @@ async function add(contact) {
         conn.end()
     }
 
-    return await get({id: obj.insertId})
+    var newContact = await get({id: obj.insertId}, true)
+    if (newContact.length > 0)
+        cache.push(newContact[0])
+    return newContact
 }
 exports.add = add;
 
-async function get(contact = {}) {
-    if(initialised)
+async function get(contact = {}, bypassCache = false) {
+    if(initialised && !bypassCache)
     {
         console.log('Contacts retrieved')
         console.log('Search params: ')
@@ -43,9 +47,9 @@ async function get(contact = {}) {
           });
     }
 
-    var values = [contact.id, contact.firstName, contact.secondName, contact.companyId, contact.isDeleted]
+    let values = [contact.id, contact.firstName, contact.secondName, contact.companyId, contact.isDeleted]
 
-    var conn = new db.Contacts()
+    let conn = new db.Contacts()
     var obj = {}
     try {
         conn.begin()

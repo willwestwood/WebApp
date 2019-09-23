@@ -5,6 +5,7 @@ exports.users = require('./routes/users');
 exports.notes = require('./routes/notes');
 exports.companies = require('./routes/companies');
 exports.contacts = require('./routes/contacts');
+exports.phoneNumbers = require('./routes/phoneNumbers');
 
 exports.test = function(req, res) {
     return res.json({

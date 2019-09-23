@@ -46,6 +46,10 @@ router.post('/companies', routes.companies.add);
 router.get('/contacts', routes.contacts.get);
 router.post('/contacts', routes.contacts.add);
 
+// phone numbers
+router.get('/phoneNumbers', routes.phoneNumbers.get);
+router.post('/phoneNumbers', routes.phoneNumbers.add);
+
 // default
 router.use(function(req, res, next) {
     console.log('Something is happening.');

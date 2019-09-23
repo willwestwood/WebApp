@@ -51,7 +51,7 @@ exports.add = async function add(newUser) {
             newUser.isAdmin,
             hash(salt + '' + newUser.password),
             salt
-        )
+        );
     } catch (e) {
         console.log(e)
         throw e
@@ -59,7 +59,10 @@ exports.add = async function add(newUser) {
         conn.end()
     }
 
-    return await get({id: obj.insertId})
+    var newUser = await get({id: obj.insertId})
+    if (newUser.length > 0)
+        cache.push(newUser[0])
+    return newUser;
 }
 
 async function get(user = {}, bypassCache = false) {
@@ -68,8 +71,6 @@ async function get(user = {}, bypassCache = false) {
         console.log('Users retrieved')
         console.log('Search params: ')
         console.log(user)
-        //console.log(new Error())
-        //throw new Error("TEst error")
         return cache.filter(obj => {
             return utils.where(user, obj)
           });
