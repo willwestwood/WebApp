@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var users = require('../models/users');
+var authentication = require('./authentication')
 
 var exports = module.exports = {}
 
@@ -26,7 +27,10 @@ exports.get = (req, res) => {
     );
 }
 
-exports.add = (req, res) => {
+exports.add = async (req, res) => {
+    console.log('REGISTER')
+    console.log(req.query)
+
     if (!_.has(req.query, 'emailAddress')
         || !_.has(req.query, 'password')
         || !_.has(req.query, 'firstName')
@@ -46,12 +50,35 @@ exports.add = (req, res) => {
         secondName: req.query.secondName,
         isAdmin: false
     })
-    .then(function(obj) {
-        res.status(200).send({
-            success: 'true',
-            message: 'registered successfully',
-            obj: obj
-        })
+    .then(async function(obj) {
+        let username = req.query.emailAddress
+        let password = req.query.password
+
+        var obj = await authentication.getToken(username, password)
+        //.then(obj => {
+            if (obj instanceof Error) {
+                res.json({
+                    success: false,
+                    message: 'error',
+                    error: obj.message
+                });
+            }
+            else {
+                console.log(obj)
+                res.json({
+                    success: true,
+                    message: 'registered successfully',
+                    token: obj
+                });
+            }
+        // })
+        // .catch(err => {
+        //     res.status(200).send({
+        //         success: 'false',
+        //         message: 'error',
+        //         error: err.message
+        //     });
+        // });
     })
     .catch(err => res.status(200).send({
         success: 'false',

@@ -1,4 +1,5 @@
 var exports = module.exports = {}
+var enums = require('./enums.js')
 
 exports.buildCommaSeparatedString = function (names, quotes = false) {
     var res = ""
@@ -44,4 +45,31 @@ exports.where = function(searchQuery, obj)
                 match = false
     });
     return match
+}
+
+exports.getKeyByValue = async function(object, value) {
+    return await Object.keys(object).find(key => object[key] == value);
+}
+
+exports.createErrorObject = async function(err) {
+    let message = ""
+    if (err instanceof Error)
+        message = err.message
+    else
+        message = err
+
+    if (enums.isErrorType(message)) {
+        let errorString = await enums.getErrorString(message)
+        return {
+            success: false,
+            errorId: Number(message),
+            message: errorString
+        }
+    }
+    else
+        return {
+            success: false,
+            errorId: enums.ErrorType.UNKNOWN,
+            message: message
+        }
 }

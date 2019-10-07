@@ -2,6 +2,7 @@ var db = require('./../db/mysql')
 var crypto = require('crypto');
 var _ = require('lodash');
 var utils = require('./../utils')
+var enums = require('./../enums')
 
 var exports = module.exports = {}
 
@@ -26,13 +27,13 @@ exports.authenticate = async function authenticate(emailAddress, password) {
     if (res.length == 0)
     {
         conn.end()
-        return new Error('Email address not found')
+        return new Error(enums.ErrorType.UNKNOWN_EMAIL_ADDRESS)
     }
     var obj = await conn.authenticateUser(emailAddress, hash(res[0].salt + '' + password))
     conn.end()
 
     if (obj.length == 0)
-        return new Error('Incorrect password')
+        return new Error(enums.ErrorType.INCORRECT_PASSWORD)
 
     return obj
 }
