@@ -80,7 +80,7 @@ app.use('/api', router);
 
 // start server
 app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`)
+  console.log('server running on port ${PORT}')
 });
 
 routes.initialise()

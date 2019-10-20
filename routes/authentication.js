@@ -15,7 +15,11 @@ exports.getToken = async (username, password) => {
                 let token = jwt.sign(obj[0], privateKey, {
                     expiresIn: 30 * 60 // expires in half an hour
                 });
-                resolve(token)
+                resolve({
+                    token: token,
+                    isAdmin: obj[0].isAdmin,
+                    isPending: obj[0].isPending
+                })
             }
             else {
                 if(obj instanceof Error)
@@ -39,7 +43,9 @@ exports.authenticate = (req, res) => {
         res.json({
             success: true,
             message: 'Enjoy your token!',
-            token: obj
+            token: obj.token,
+            isAdmin: obj.isAdmin,
+            isPending: obj.isPending
         });
     })
     .catch(async err => {
@@ -76,6 +82,6 @@ exports.validateToken = async (req, res, next) => {
         });
     } else {
         // if there is no token, return an error
-        return res.json(utils.createErrorObject(Enums.ErrorType.NO_TOKEN))
+        return res.json(await utils.createErrorObject(Enums.ErrorType.NO_TOKEN))
     }
 }

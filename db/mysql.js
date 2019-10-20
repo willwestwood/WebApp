@@ -115,7 +115,7 @@ exports.Users = class Users extends MySqlConnection {
 
     authenticateUser(emailAddress, passwordHash) {
         return super.select({
-            whereNames: [super.columns().emailAddress, super.columns().passwordHash], 
+            whereNames: [super.columns().emailAddress, super.columns().passwordHash, super.columns().isAdmin, super.columns().isPending], 
             whereValues: [emailAddress, passwordHash]
         })
     }

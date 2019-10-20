@@ -68,7 +68,9 @@ exports.add = async (req, res) => {
                 res.json({
                     success: true,
                     message: 'registered successfully',
-                    token: obj
+                    token: obj.token,
+                    isPending: false,
+                    isAdmin: false
                 });
             }
         // })
