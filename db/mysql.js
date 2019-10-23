@@ -32,14 +32,14 @@ class MySqlConnection {
         this._connection.end();
     }
 
-    executeQuery(query)
+    executeQuery(query, params)
     {
         console.log(query)
 
         var conn = this._connection
         return new Promise(function (resolve, reject) {
             try {
-                conn.query(query, function (err, rows, fields) {
+                conn.query(query, params, function (err, rows, fields) {
                     if (err)
                         reject(err)
 
@@ -69,11 +69,11 @@ class MySqlConnection {
                 if (i > 0)
                     selectStr += ' AND'
 
-                selectStr += ' ' + queryParameters.where.names[i] + ' = \'' + queryParameters.where.values[i] + '\''
+                selectStr += ' ' + queryParameters.where.names[i] + ' = ?'
             }
         }
 
-        return this.executeQuery(selectStr)
+        return this.executeQuery(selectStr, queryParameters.where.values)
     }
 
     insert(values) {
@@ -84,9 +84,9 @@ class MySqlConnection {
         insertStr += ' ('
         insertStr += utils.buildCommaSeparatedString(query.names)
         insertStr += ") VALUES ("
-        insertStr += utils.buildCommaSeparatedString(query.values, true)
+        insertStr += utils.buildCommaSeparatedQMs(query.values.length)
         insertStr += ")"
-        return this.executeQuery(insertStr)
+        return this.executeQuery(insertStr, query.values)
     }
 }
 

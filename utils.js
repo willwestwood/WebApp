@@ -17,6 +17,20 @@ exports.buildCommaSeparatedString = function (names, quotes = false) {
     return res
 }
 
+exports.buildCommaSeparatedQMs = function (size) {
+    var res = ""
+    if (size > 0)
+    {
+        for(var i = 0; i < size; i++)
+        {
+            res += '?'
+            if (i != size - 1)
+                res += ', '
+        }
+    }
+    return res
+}
+
 exports.sanitiseQuery = function (names, values) {
     let length = Math.min(names.length, values.length)
     for(let i = 0; i < length;) {
