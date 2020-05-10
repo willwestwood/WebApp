@@ -58,3 +58,30 @@ exports.add = (req, res) => {
         })
     });
 }
+
+exports.delete = (req, res) => {
+    if (!_.has(req.query, 'id')) {
+        res.status(200).send({
+            success: 'false',
+            message: 'missing params',
+            obj: req.query
+        });
+        return
+    }
+    companies.setDeleted(req.query.id)
+    .then(function(obj) {
+        res.status(200).send({
+        success: 'true',
+        message: 'added successfully',
+        obj: obj
+        })
+    })
+    .catch(err => {
+        console.log(err.stack)
+        res.status(200).send({
+        success: 'false',
+        message: 'error',
+        error: err.message
+        })
+    });
+}

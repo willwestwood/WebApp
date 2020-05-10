@@ -15,8 +15,7 @@ exports.initialise = function() {
     });
 }
 
-function hash(input)
-{
+function hash(input) {
     return crypto.createHash('sha1').update(input).digest('hex');
 }
 

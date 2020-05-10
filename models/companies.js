@@ -41,3 +41,20 @@ async function get(company) {
     return obj
 }
 exports.get = get;
+
+async function setDeleted(id) {
+    var conn = new db.Companies()
+    var obj = {}
+    try {
+        conn.begin()
+        obj = await conn.delete(id)
+    } catch (e) {
+        console.log(e)
+        throw e
+    } finally {
+        conn.end()
+    }
+
+    return await get({id: obj.insertId})
+}
+exports.setDeleted = setDeleted;

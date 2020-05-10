@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+  res.header('Access-Control-Allow-Origin', '*');// 'http://localhost:8080');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type, x-access-token');
 
@@ -60,6 +60,7 @@ router.post('/notes', routes.notes.add);
 // companies
 router.get('/companies', routes.companies.get);
 router.post('/companies', routes.companies.add);
+router.post('/companies/delete', routes.companies.delete);
 
 // contacts
 router.get('/contacts', routes.contacts.get);
@@ -80,7 +81,7 @@ app.use('/api', router);
 
 // start server
 app.listen(PORT, () => {
-  console.log('server running on port ${PORT}')
+  console.log('server running on port ' + PORT)
 });
 
 routes.initialise()

@@ -88,6 +88,28 @@ class MySqlConnection {
         insertStr += ")"
         return this.executeQuery(insertStr, query.values)
     }
+
+    update(name, value) {
+        let insertStr = "UPDATE"
+        insertStr += ' ' + this.table()
+        insertStr += ' SET'
+        insertStr += " " + name
+        insertStr += " = ?"
+        return this.executeQuery(insertStr, value)
+    }
+
+    delete(id) {
+        let insertStr = "UPDATE"
+        insertStr += ' ' + this.table()
+        insertStr += ' SET'
+        insertStr += "  isDeleted"
+        insertStr += " ="
+        insertStr += " TRUE"
+        insertStr += " WHERE"
+        insertStr += " ID"
+        insertStr += " = ?"
+        return this.executeQuery(insertStr, id)
+    }
 }
 
 exports.Users = class Users extends MySqlConnection {

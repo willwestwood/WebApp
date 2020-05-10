@@ -38,6 +38,9 @@ exports.authenticate = (req, res) => {
     let username = req.body.user;
     let password = req.body.password;
 
+    console.log(username)
+    console.log(password)
+
     exports.getToken(username, password)
     .then(obj => {
         res.json({
@@ -50,7 +53,7 @@ exports.authenticate = (req, res) => {
     })
     .catch(async err => {
         let obj = await utils.createErrorObject(err)
-        return res.json(obj);
+        return res.json(obj); //await utils.createErrorObject(Enums.ErrorType.INVALID_TOKEN));
     })
 }
 

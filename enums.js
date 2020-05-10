@@ -7,8 +7,9 @@ const ErrorType = {
     UNKNOWN_EMAIL_ADDRESS: 3, 
     USER_PENDING: 4,
     NO_TOKEN: 5,
-    AUTHENTICATION_FAILED: 6,
-    COUNT: 7
+    INVALID_TOKEN: 6,
+    AUTHENTICATION_FAILED: 7,
+    COUNT: 8
 }
 Object.freeze(ErrorType)
 module.exports.ErrorType = ErrorType
