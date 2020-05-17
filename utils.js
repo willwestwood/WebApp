@@ -1,15 +1,18 @@
 var exports = module.exports = {}
 var enums = require('./enums.js')
 
-exports.buildCommaSeparatedString = function (names, quotes = false) {
+exports.buildCommaSeparatedString = function (names, quotes = false, suffix = '') {
     var res = ""
     if (names.length > 0)
     {
         for(var i = 0; i < names.length; i++)
         {
-            if (quotes && !(typeof names[i] === 'boolean')) res += "'"
+            if (quotes && !(typeof names[i] === 'boolean'))
+                res += "'"
             res += names[i]
-            if (quotes && !(typeof names[i] === 'boolean')) res += "'"
+            if (quotes && !(typeof names[i] === 'boolean'))
+                res += "'"
+            res += suffix
             if (i != names.length - 1)
                 res += ', '
         }

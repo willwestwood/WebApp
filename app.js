@@ -60,6 +60,7 @@ router.post('/notes', routes.notes.add);
 // companies
 router.get('/companies', routes.companies.get);
 router.post('/companies', routes.companies.add);
+router.post('/companies/update', routes.companies.update);
 router.post('/companies/delete', routes.companies.delete);
 
 // contacts

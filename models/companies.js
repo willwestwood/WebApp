@@ -22,8 +22,8 @@ async function add(company) {
 }
 exports.add = add;
 
-async function get(company) {
-    var values = [company.id, company.name, company.type, company.industry]
+async function get(company, isDeleted = false) {
+    var values = [company.id, company.name, company.type, company.industry, isDeleted]
 
     var conn = new db.Companies()
     var obj = {}
@@ -41,6 +41,33 @@ async function get(company) {
     return obj
 }
 exports.get = get;
+
+async function update(company) {
+    let id = company.id
+    var conn = new db.Companies()
+    var obj = {}
+    try {
+        conn.begin()
+        let updatedCompany = await conn.select({whereValues: [id]})
+        if (updatedCompany.length == 0)
+            throw new Error("Internal error")
+        updatedCompany = updatedCompany[0]
+
+        for (var key in company)
+            if (company.hasOwnProperty(key) && company[key] != undefined)
+                updatedCompany[key] = company[key]
+                
+        obj = await conn.update(id, updatedCompany.name, updatedCompany.type, updatedCompany.industry)
+    } catch (e) {
+        console.log(e)
+        throw e
+    } finally {
+        conn.end()
+    }
+
+    return await get({id: obj.insertId})
+}
+exports.update = update;
 
 async function setDeleted(id) {
     var conn = new db.Companies()

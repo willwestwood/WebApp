@@ -89,13 +89,19 @@ class MySqlConnection {
         return this.executeQuery(insertStr, query.values)
     }
 
-    update(name, value) {
-        let insertStr = "UPDATE"
-        insertStr += ' ' + this.table()
-        insertStr += ' SET'
-        insertStr += " " + name
-        insertStr += " = ?"
-        return this.executeQuery(insertStr, value)
+    update(id, values) {
+        let query = utils.sanitiseQuery(this.insertColumns(), values)
+
+        let updateStr = "UPDATE"
+        updateStr += ' ' + this.table()
+        updateStr += ' SET '
+        updateStr += utils.buildCommaSeparatedString(query.names, false, " = ?")
+        updateStr += " WHERE"
+        updateStr += " ID"
+        updateStr += " = ?"
+
+        query.values.push(id)
+        return this.executeQuery(updateStr, query.values)
     }
 
     delete(id) {
@@ -135,6 +141,10 @@ exports.Users = class Users extends MySqlConnection {
         return super.insert([firstName, secondName, emailAddress, passwordHash, salt, isAdmin, isPending])
     }
 
+    update(id, firstName, secondName, emailAddress, isAdmin, passwordHash, salt, isPending = true) {
+        return super.update(id, [firstName, secondName, emailAddress, passwordHash, salt, isAdmin, isPending])
+    }
+
     authenticateUser(emailAddress, passwordHash) {
         return super.select({
             whereNames: [super.columns().emailAddress, super.columns().passwordHash, super.columns().isAdmin, super.columns().isPending], 
@@ -170,6 +180,10 @@ exports.Notes = class Notes extends MySqlConnection {
     insert(note, userId, contactId) {
         return super.insert([contactId, userId, note])
     }
+
+    update(id, note, userId, contactId) {
+        return super.update(id, [contactId, userId, note])
+    }
 }
 
 exports.Companies = class Companies extends MySqlConnection {
@@ -178,16 +192,21 @@ exports.Companies = class Companies extends MySqlConnection {
             id: 'id',
             name: 'name',
             type: 'type',
-            industry: 'industry'
+            industry: 'industry',
+            isDeleted: 'isDeleted'
         }
 
-        var selectCols = [columns.id, columns.name, columns.type, columns.industry]
+        var selectCols = [columns.id, columns.name, columns.type, columns.industry, columns.isDeleted]
         var insertCols = [columns.name, columns.type, columns.industry]
         super('companies', columns, selectCols, insertCols)
     }
 
     insert(name, type, industry) {
         return super.insert([name, type, industry])
+    }
+
+    update(id, name, type, industry) {
+        return super.update(id, [name, type, industry])
     }
 }
 
@@ -208,6 +227,10 @@ exports.Contacts = class Contacts extends MySqlConnection {
 
     insert(firstName, secondName, companyId) {
         return super.insert([firstName, secondName, companyId])
+    }
+
+    update(id, firstName, secondName, companyId) {
+        return super.update(id, [firstName, secondName, companyId])
     }
 }
 
@@ -230,5 +253,9 @@ exports.PhoneNumbers = class PhoneNumbers extends MySqlConnection {
 
     insert(contactId, companyId, phoneNumber, label, precedence) {
         return super.insert([contactId, companyId, phoneNumber, label, precedence])
+    }
+
+    update(id, contactId, companyId, phoneNumber, label, precedence) {
+        return super.update(id, [contactId, companyId, phoneNumber, label, precedence])
     }
 }

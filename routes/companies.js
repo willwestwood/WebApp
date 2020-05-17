@@ -59,6 +59,39 @@ exports.add = (req, res) => {
     });
 }
 
+exports.update = (req, res) => {
+    if (!_.has(req.query, 'name')) {
+        res.status(200).send({
+            success: 'false',
+            message: 'missing params',
+            obj: req.query
+        });
+        return
+    }
+
+    companies.update({
+        id: req.query.id,
+        name: req.query.name,
+        type: req.query.type,
+        industry: req.query.industry
+    })
+    .then(function(obj) {
+        res.status(200).send({
+        success: 'true',
+        message: 'updated successfully',
+        obj: obj
+        })
+    })
+    .catch(err => {
+        console.log(err.stack)
+        res.status(200).send({
+        success: 'false',
+        message: 'error',
+        error: err.message
+        })
+    });
+}
+
 exports.delete = (req, res) => {
     if (!_.has(req.query, 'id')) {
         res.status(200).send({
