@@ -5,7 +5,8 @@ var exports = module.exports = {}
 
 var initialised = false
 var cache = []
-exports.initialise = function() {
+exports.initialise = async function() {
+    await db.initialise()
     get().then(obj => {
         cache = obj
         initialised = true
@@ -44,7 +45,7 @@ async function get(contact = {}, bypassCache = false) {
         console.log(contact)
         return cache.filter(obj => {
             return utils.where(contact, obj)
-          });
+        });
     }
 
     let values = [contact.id, contact.firstName, contact.secondName, contact.companyId, contact.isDeleted]

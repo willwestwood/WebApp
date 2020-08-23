@@ -8,7 +8,8 @@ var exports = module.exports = {}
 
 var initialised = false
 var cache = []
-exports.initialise = function() {
+exports.initialise = async function() {
+    await db.initialise()
     get().then(obj => {
         cache = obj
         initialised = true

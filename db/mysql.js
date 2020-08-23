@@ -1,7 +1,17 @@
 var mysql = require('mysql')
 var utils = require('./../utils.js')
+var fs = require('fs').promises
 
 var exports = module.exports = {}
+var decryptedPassword = undefined
+
+exports.initialise = async function()
+{
+    console.log('Initialising...')
+    if (decryptedPassword == undefined)
+        decryptedPassword = await utils.decrypt(await JSON.parse(await fs.readFile('db/pswd.txt', 'utf8')))
+    console.log('Initialisation finished')
+}
 
 class MySqlConnection {
     constructor(table, columns, selectCols, insertCols) {
@@ -16,11 +26,11 @@ class MySqlConnection {
     selectColumns() { return this._selectCols }
     insertColumns() { return this._insertCols }
 
-    begin() {
+    async begin() {
         let connectionStr = {
             host: 'localhost',
             user: 'root',
-            password: 'testtest',
+            password: decryptedPassword,
             database: 'crm'
         }
 

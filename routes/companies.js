@@ -118,3 +118,7 @@ exports.delete = (req, res) => {
         })
     });
 }
+
+exports.initialise = async function() {
+    await companies.initialise();
+}

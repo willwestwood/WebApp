@@ -89,6 +89,6 @@ exports.add = async (req, res) => {
     }));
 }
 
-exports.initialise = function() {
-    users.initialise();
+exports.initialise = async function() {
+    await users.initialise();
 }

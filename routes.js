@@ -14,7 +14,8 @@ exports.test = function(req, res) {
     });
 }
 
-exports.initialise = function() {
-    exports.contacts.initialise();
-    exports.users.initialise();
+exports.initialise = async function() {
+    await exports.companies.initialise();
+    await exports.contacts.initialise();
+    await exports.users.initialise();
 }

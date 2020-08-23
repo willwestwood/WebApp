@@ -1,5 +1,6 @@
 var exports = module.exports = {}
 var enums = require('./enums.js')
+var crypto = require('crypto')
 
 exports.buildCommaSeparatedString = function (names, quotes = false, suffix = '') {
     var res = ""
@@ -89,4 +90,23 @@ exports.createErrorObject = async function(err) {
             errorId: enums.ErrorType.UNKNOWN,
             message: message
         }
+}
+
+const iv = Buffer.from([ 161, 17, 176, 78, 45, 107, 43, 50, 29, 39, 169, 76, 149, 12, 200, 17 ])
+const key = Buffer.from([ 189, 181, 122, 229, 161, 94, 97, 124, 46, 168, 90, 218, 237, 134, 223, 32, 186, 85, 145, 216, 94, 178, 160, 1, 105, 21, 235, 174, 227, 106, 232, 245 ])
+
+exports.encrypt = async function(text) {
+    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return { iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') };
+}
+
+exports.decrypt = async function(text) {
+    let iv = Buffer.from(text.iv, 'hex');
+    let encryptedText = Buffer.from(text.encryptedData, 'hex');
+    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
 }

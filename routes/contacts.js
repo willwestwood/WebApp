@@ -55,6 +55,6 @@ exports.add = (req, res) => {
     }));
 }
 
-exports.initialise = function() {
-    contacts.initialise();
+exports.initialise = async function() {
+    await contacts.initialise();
 }
