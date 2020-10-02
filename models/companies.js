@@ -29,8 +29,8 @@ async function add(company) {
         conn.end()
     }
 
-    var newCompany = await get({id: obj.insertId})
-    if (newContact.length > 0)
+    var newCompany = await get({id: obj.insertId}, false, true)
+    if (newCompany.length > 0)
         cache.push(newCompany[0])
     return newCompany
 }
@@ -99,6 +99,13 @@ async function update(company) {
 exports.update = update;
 
 async function setDeleted(id) {
+    await cache.filter(obj => utils.where({id: id}, obj))
+    .forEach(obj => {
+        obj.isDeleted = true; 
+    })
+
+    cache.splice(cache.findIndex(obj => utils.where({id: id}, obj)),1);
+
     var conn = new db.Companies()
     var obj = {}
     try {
