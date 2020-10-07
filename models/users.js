@@ -59,8 +59,8 @@ exports.add = async function add(newUser) {
     } finally {
         conn.end()
     }
-
-    var newUser = await get({id: obj.insertId})
+    
+    var newUser = await get({id: obj.insertId}, true)
     if (newUser.length > 0)
         cache.push(newUser[0])
     return newUser;

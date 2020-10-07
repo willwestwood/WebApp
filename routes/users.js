@@ -10,7 +10,8 @@ exports.get = (req, res) => {
         firstName: req.query.firstName,
         secondName: req.query.secondName,
         emailAddress: req.query.emailAddress,
-        isAdmin: req.query.isAdmin
+        isAdmin: req.query.isAdmin,
+        isPending: req.query.isPending
     })
     .then(function(obj) {
         res.status(200).send({
